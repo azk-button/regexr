@@ -2,31 +2,24 @@
 /* eslint camelcase: [2, {properties: "never"}] */
 /* eslint comma-dangle: [0, {properties: "never"}] */
 systems({
-  regexr: {
+  'regexr-builder': {
     depends: [],
-    image: { docker: 'azukiapp/ruby' },
+    image: { docker: 'node:4.2.3' },
     provision: [
-      'NODE_ENV=dev npm install',
-      'bundle install --path /azk/bundler',
-      'node_modules/.bin/grunt build',
+      'npm install',
     ],
     workdir: '/azk/#{system.name}',
     shell: '/bin/bash',
-    command: 'node_modules/.bin/grunt serve',
+    command: 'node_modules/.bin/gulp build',
+
     wait: 20,
     mounts: {
-      '/azk/#{system.name}': sync('.'),
+      '/azk/#{system.name}': path('.'),
 
       // node mounts
       '/azk/#{system.name}/node_modules': persistent('./node_modules'),
       '/azk/#{system.name}/.sass-cache': persistent('./.sass-cache'),
       '/azk/#{system.name}/build': persistent('./build'),
-
-      // ruby mounts
-      '/azk/bundler': persistent('#{system.name}/bundler'),
-      '/azk/#{system.name}/tmp': persistent('#{system.name}/tmp'),
-      '/azk/#{system.name}/log': path('#{system.name}/log'),
-      '/azk/#{system.name}/.bundle': path('#{system.name}/.bundle')
     },
     scalable: { default: 1 },
     http: {
@@ -37,11 +30,10 @@ systems({
       ]
     },
     ports: {
-      http: '8000/tcp'
+      http: '8080/tcp',
     },
     envs: {
-      NODE_ENV: 'production',
-      PORT: '8000',
+      PORT: '8080',
     },
   },
 
