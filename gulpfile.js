@@ -117,7 +117,8 @@ gulp.task('watch-js', function () {
 
 gulp.task('server', function () {
     connect.server({
-        root: 'build'
+        root: 'build',
+        host: '0.0.0.0'
     });
 });
 
@@ -164,7 +165,7 @@ gulp.task('build', function (done) {
         ['build-js', 'copy-assets', 'sass'],
         ['minify-js', 'minify-css', 'inline'],
         ['parse-index', 'clean-post-build'],
-        'server', 'open-build',
+        'server',
         done
     );
 });

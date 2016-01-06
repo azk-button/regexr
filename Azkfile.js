@@ -2,24 +2,27 @@
 /* eslint camelcase: [2, {properties: "never"}] */
 /* eslint comma-dangle: [0, {properties: "never"}] */
 systems({
-  'regexr-builder': {
+  regexr: {
     depends: [],
-    image: { docker: 'node:4.2.3' },
+    image: { docker: 'azukiapp/node:latest' },
     provision: [
-      'npm install',
+      'NODE_ENV=dev npm install',
     ],
     workdir: '/azk/#{system.name}',
     shell: '/bin/bash',
     command: 'node_modules/.bin/gulp build',
-
     wait: 20,
     mounts: {
-      '/azk/#{system.name}': path('.'),
+      '/azk/#{system.name}': sync('.'),
 
       // node mounts
       '/azk/#{system.name}/node_modules': persistent('./node_modules'),
       '/azk/#{system.name}/.sass-cache': persistent('./.sass-cache'),
       '/azk/#{system.name}/build': persistent('./build'),
+
+      // ruby mounts
+      '/azk/#{system.name}/tmp': persistent('#{system.name}/tmp'),
+      '/azk/#{system.name}/log': path('#{system.name}/log'),
     },
     scalable: { default: 1 },
     http: {
@@ -30,9 +33,10 @@ systems({
       ]
     },
     ports: {
-      http: '8080/tcp',
+      http: '8080/tcp'
     },
     envs: {
+      NODE_ENV: 'production',
       PORT: '8080',
     },
   },
